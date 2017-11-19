@@ -155,4 +155,5 @@
 
     <string name="logviewer_message_loading">loading log file</string>
     <string name="logviewer_next_lines_button">next</string>
+    <string name="user">user: </string>
 </resources>

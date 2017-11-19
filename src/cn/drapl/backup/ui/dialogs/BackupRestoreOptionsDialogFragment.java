@@ -13,6 +13,7 @@ import cn.drapl.backup.OAndBackup;
 import cn.drapl.backup.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BackupRestoreOptionsDialogFragment extends DialogFragment {
@@ -52,12 +53,17 @@ public class BackupRestoreOptionsDialogFragment extends DialogFragment {
                 AppInfo.MODE_DATA;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(appInfo.getLabel());
-        String[] displayedUsers = actionType == BackupRestoreHelper.ActionType
+        String[] actualUsers = actionType == BackupRestoreHelper.ActionType
              .BACKUP ? appInfo.getUsers().toArray(new String[0]) :
                 users;
+        String[] displayedUsers = new String[actualUsers.length];
+        for(int i=0; i<actualUsers.length; i++) {
+            displayedUsers[i] = getString(R.string.user) + actualUsers[i];
+        }
+
         if (displayedUsers.length > 0) {
             builder.setSingleChoiceItems(displayedUsers, 0, (dialog, which) -> {
-                selectedUser = displayedUsers[which];
+                selectedUser = actualUsers[which];
             });
         } else {
             int dialogMessage = actionType == BackupRestoreHelper.ActionType
