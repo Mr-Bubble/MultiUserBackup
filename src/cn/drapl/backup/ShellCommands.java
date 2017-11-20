@@ -791,15 +791,14 @@ public class ShellCommands implements CommandHandler.UnexpectedExceptionListener
     }
 
     public List<AppInfo> getPackagesOfOtherUsers(Context context, Map<String, AppInfo> exists, PackageManager pm) {
-        List<AppInfo> ret = new ArrayList<>();
+        Map<String, AppInfo> packages = new HashMap<>();
         ArrayList<String> users = getUsers();
-        Map<String, ArrayList<String>> other = new HashMap<>();
-        Map<String, String> apkMap = new HashMap<>();
+
         for (String user : users) {
-            Map<String, String> pkgs = new HashMap<>();
             if (user.equals("0")) {
                 continue;
             }
+
             List<String> commands = new ArrayList<>();
             List<String> lines = new ArrayList<>();
             commands.add("pm list packages -f -u --user " + user);
@@ -811,37 +810,38 @@ public class ShellCommands implements CommandHandler.UnexpectedExceptionListener
             for (String pkgLine : lines) {
                 Matcher m = packagePattern.matcher(pkgLine.trim());
                 if (!m.find()) continue;
-                String apkPath = m.group(1);
-                String name = m.group(2);
-                apkMap.put(name, apkPath);
-                AppInfo existsApp = exists.get(name);
-                boolean dataExist = new File("/data/user/" + user + "/" + name).exists();
-                if (existsApp != null) {
-                    if (dataExist) {
-                        existsApp.addUser(user);
-                    }
-                } else {
-                    List<String> linkCommands = new ArrayList<>();
-                    String apkLink = context.getCacheDir() + "/" + name + ".apk";
-                    linkCommands.add("ln -snf " + apkPath + " " + apkLink);
-                    CommandHandler.runCmd("su", linkCommands, line_i -> {
-                            },
-                            line_i -> writeErrorLog("", line_i),
-                            e -> Log.e(TAG, "getPackagesOfOtherUsers: ", e), this);
-                    pkgs.put(name, apkLink);
+                String apkPath = m.group(1); // path of apk file
+                String name = m.group(2); // package name
+
+                // some apps is in the list, but don't have data. Just ignore it.
+                if(!new File("/data/user/" + user + "/" + name).exists()) {
+                    continue;
                 }
-            }
-            other.put(user, new ArrayList<>(pkgs.values()));
-        }
 
-        for (Map.Entry<String, ArrayList<String>> pair : other.entrySet()) {
-            String user = pair.getKey();
-            ArrayList<String> apps = pair.getValue();
-            for (String apkPath : apps) {
-                PackageInfo pinfo = pm.getPackageArchiveInfo(apkPath, PackageManager.GET_META_DATA);
-                ApkParser apkParser = ApkParser.create(apkPath);
+                AppInfo existsApp = exists.get(name);
+                if(existsApp == null) {
+                    existsApp = packages.get(name);
+                }
+
+                if (existsApp != null) {
+                    // the package is exist in previous user
+                    existsApp.addUser(user);
+                    continue;
+                }
+
+                // link the apk file to own path and parse it
+                // otherwise the parsing process will be slow
+                List<String> linkCommands = new ArrayList<>();
+                String apkLink = context.getCacheDir() + "/" + name + ".apk";
+                linkCommands.add("ln -snf " + apkPath + " " + apkLink);
+                CommandHandler.runCmd("su", linkCommands, line_i -> {
+                        },
+                        line_i -> writeErrorLog("", line_i),
+                        e -> Log.e(TAG, "getPackagesOfOtherUsers: ", e),
+                        this);
+
+                ApkParser apkParser = ApkParser.create(apkLink);
                 apkParser.setPreferredLocale(Utils.getCurrentLocale(context));
-
                 ApkMeta meta;
                 try {
                     meta = apkParser.getApkMeta();
@@ -849,9 +849,7 @@ public class ShellCommands implements CommandHandler.UnexpectedExceptionListener
                     e.printStackTrace();
                     continue;
                 }
-                if (pinfo == null) {
-                    continue;
-                }
+
 
                 Bitmap icon;
                 try {
@@ -860,24 +858,27 @@ public class ShellCommands implements CommandHandler.UnexpectedExceptionListener
                             apkIcon.data.length);
                 } catch (IOException e) {
                     e.printStackTrace();
+                    PackageInfo pinfo = pm.getPackageArchiveInfo(apkLink,
+                            PackageManager.GET_META_DATA);
+                    if (pinfo == null) {
+                        continue;
+                    }
                     icon = getIcon(pm, pinfo);
                 }
 
-                AppInfo existsApp = exists.get(pinfo.packageName);
-                if (existsApp == null) {
-                    AppInfo appInfo = new AppInfo(pinfo.packageName,
-                            meta.label,
-                            pinfo.versionName, pinfo.versionCode,
-                            apkMap.get(pinfo.packageName),
-                            "/data/user/" + user + "/" + pinfo.packageName, false,
-                            true);
-                    appInfo.addUser(user);
-                    ret.add(appInfo);
-                    appInfo.icon = icon;
-                }
+                AppInfo appInfo = new AppInfo(name,
+                        meta.label,
+                        meta.versionName,
+                        meta.versionCode.intValue(),
+                        apkPath,
+                        "/data/user/" + user + "/" + meta.packageName, false,
+                        true);
+                appInfo.addUser(user);
+                packages.put(name, appInfo);
+                appInfo.icon = icon;
             }
         }
 
-        return ret;
+        return new ArrayList<>(packages.values());
     }
 }
