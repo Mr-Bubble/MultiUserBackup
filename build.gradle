@@ -24,6 +24,8 @@ android {
     buildToolsVersion "26.0.2"
 
    defaultConfig {
+       versionCode 3010
+       versionName "3.0.1"
         jackOptions {
             enabled true
         }
@@ -48,6 +50,14 @@ android {
 
     lintOptions {
         abortOnError false
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.each { output ->
+            def apk = output.outputFile;
+            output.outputFile = new File(apk.parentFile,
+                    "${project.name}-${variant.versionName}-${variant.buildType.name}.apk")
+        }
     }
 }
 
