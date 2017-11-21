@@ -14,8 +14,9 @@ repositories {
 }
 
 dependencies {
-        compile 'org.sufficientlysecure:openpgp-api:9.0'
+    compile 'org.sufficientlysecure:openpgp-api:9.0'
     compile 'com.jaredrummler:apk-parser:1.0.2'
+    compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
 
 }
 

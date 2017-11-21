@@ -12,8 +12,9 @@
     <string name="radioData">数据</string>
     <string name="radioBoth">数据+apk安装包</string>
     <string name="de_selectAll">选择/不选全部</string>
-    <string name="onlyApkBackedUp">只备份apk</string>
-    <string name="onlyDataBackedUp">只备份数据</string>
+    <string name="onlyApkBackedUp">apk安装包</string>
+    <string name="onlyDataBackedUp">数据</string>
+    <string name="bothBackedUp">apk和数据</string>
     <string name="refresh">刷新</string>
     <string name="batchbackup">批量备份</string>
     <string name="batchrestore">批量还原</string>
@@ -156,4 +157,6 @@
     <string name="logviewer_message_loading">载入日志文件</string>
     <string name="logviewer_next_lines_button">下一步</string>
     <string name="user">用户：</string>
+    <string name="isSystem">系统应用</string>
+
 </resources>

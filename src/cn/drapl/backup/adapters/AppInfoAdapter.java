@@ -11,6 +11,9 @@ import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
+
+import org.apache.commons.lang.StringUtils;
+
 import cn.drapl.backup.AppInfo;
 import cn.drapl.backup.LogFile;
 import cn.drapl.backup.R;
@@ -83,6 +86,7 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo>
             viewHolder.lastBackup = (TextView) convertView.findViewById(R.id.lastBackup);
             viewHolder.backupMode = (TextView) convertView.findViewById(R.id.backupMode);
             viewHolder.icon = (ImageView) convertView.findViewById(R.id.icon);
+            viewHolder.users = (TextView) convertView.findViewById(R.id.users);
             convertView.setTag(viewHolder);
         }
         else
@@ -141,19 +145,30 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo>
                 viewHolder.packageName.setTextColor(Color.GRAY);
             }
             int backupMode = appInfo.getBackupMode();
-            switch(backupMode)
-            {
-                case AppInfo.MODE_APK:
-                    viewHolder.backupMode.setText(R.string.onlyApkBackedUp);
-                    break;
-                case AppInfo.MODE_DATA:
-                    viewHolder.backupMode.setText(R.string.onlyDataBackedUp);
-                    break;
-                default:
-                    viewHolder.backupMode.setText("");
-                    break;
+            if(appInfo.getLogInfo() != null) {
+                switch (backupMode) {
+                    case AppInfo.MODE_APK:
+                        viewHolder.backupMode.setText(R.string.onlyApkBackedUp);
+                        break;
+                    case AppInfo.MODE_DATA:
+                        viewHolder.backupMode.setText(R.string.onlyDataBackedUp);
+                        break;
+                    default:
+                        viewHolder.backupMode.setText(R.string.bothBackedUp);
+                        break;
+                }
+            } else {
+                viewHolder.backupMode.setText("");
             }
-        }
+            if(appInfo.isSystem()) {
+                viewHolder.users.setText(R.string.isSystem);
+            } else {
+                viewHolder.users.setText(
+                        context.getString(R.string.user) +
+                                String.format("%7s",
+                                        StringUtils.join(appInfo.getUsers(), ", ")));
+            }
+            }
         return convertView;
     }
     static class ViewHolder
@@ -163,6 +178,7 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo>
         TextView versionName;
         TextView lastBackup;
         TextView backupMode;
+        TextView users;
         ImageView icon;
     }
     @Override
@@ -244,7 +260,7 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo>
         }
     }
 
-    public void filterAppType(int options)
+    public void filterAppType(int options, String user)
     {
         ArrayList<AppInfo> notInstalled = new ArrayList<AppInfo>();
         items.clear();
@@ -253,11 +269,13 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo>
             case 0: // all apps
                 for(AppInfo appInfo : originalValues)
                 {
-                    if(appInfo.isInstalled())
+                    if(appInfo.isInstalled() &&
+                            (appInfo.isSystem() || user == null ||
+                                    appInfo.getUsers().contains(user)))
                     {
                         add(appInfo);
                     }
-                    else
+                    else if(!appInfo.isInstalled())
                     {
                         notInstalled.add(appInfo);
                     }
@@ -269,11 +287,12 @@ public class AppInfoAdapter extends ArrayAdapter<AppInfo>
                 {
                     if(!appInfo.isSystem())
                     {
-                        if(appInfo.isInstalled())
+                        if(appInfo.isInstalled() && (user == null ||
+                                appInfo.getUsers().contains(user)))
                         {
                             add(appInfo);
                         }
-                        else
+                        else if(!appInfo.isInstalled())
                         {
                             notInstalled.add(appInfo);
                         }

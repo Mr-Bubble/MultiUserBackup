@@ -14,6 +14,7 @@
     <string name="de_selectAll">de/select all</string>
     <string name="onlyApkBackedUp">only apk</string>
     <string name="onlyDataBackedUp">only data</string>
+    <string name="bothBackedUp">data and apk</string>
     <string name="refresh">refresh</string>
     <string name="batchbackup">batch backup</string>
     <string name="batchrestore">batch restore</string>
@@ -156,4 +157,5 @@
     <string name="logviewer_message_loading">loading log file</string>
     <string name="logviewer_next_lines_button">next</string>
     <string name="user">user: </string>
+    <string name="isSystem">System</string>
 </resources>

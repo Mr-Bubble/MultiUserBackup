@@ -17,7 +17,7 @@
             android:id="@+id/label"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:layout_weight="0.7"
+            android:layout_weight="0.6"
             android:textColor="#fff"
             android:textSize="16sp"
         />
@@ -25,7 +25,7 @@
             android:id="@+id/versionCode"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
-            android:layout_weight="0.3"
+            android:layout_weight="0.4"
             android:gravity="right"
             android:ellipsize="marquee"
             android:maxLines="1"
@@ -35,11 +35,28 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical" >
-        <TextView
-            android:id="@+id/packageName"
-            android:layout_height="wrap_content"
-            android:layout_width="fill_parent"
-        />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/packageName"
+                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_weight="0.6"
+                />
+
+            <TextView
+                android:id="@+id/users"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.4"
+                android:gravity="end"
+                />
+        </LinearLayout>
+
         <!-- hvis det andet LinearLayout har android:orientation="horizontal", lastBackup har android:gravity="right" (og android:paddingLeft="5sp") og text2 har android:layout_width="wrap_content" bliver de to tekster sat over for hinanden, men scrollbevægelsen bliver ujævn-->
         <LinearLayout
             android:layout_width="match_parent"
