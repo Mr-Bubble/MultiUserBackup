@@ -98,18 +98,14 @@ public class BackupRestoreHelper {
                 if (appInfo.isSpecial()) {
                     restoreRet = shellCommands.restoreSpecial(backupSubDir, appInfo.getLabel(), appInfo.getFilesList());
                 } else {
-                    if (!user.equals("0")) {
-                        if (!dataDir.matches("^/data/user/\\d+/.*")) {
-                            throw new RuntimeException("Invalid dataDir on restore.");
-                        }
-
-                        dataDir = dataDir.replaceFirst("^/data/user/\\d+/",
-                                "/data/user/" + user + "/");
-                        if (!new File(dataDir).exists()) {
-                            shellCommands.installApk(null, null, appInfo.getSourceDir(), appInfo.getLabel(), user);
-                        }
+                    if (!dataDir.matches("^/data/user/\\d+/.*")) {
+                        throw new RuntimeException("Invalid dataDir on restore.");
                     }
-//                    restoreRet = shellCommands.doRestore(context, backupSubDir, appInfo.getLabel(), appInfo.getPackageName(), appInfo.getLogInfo().getDataDir());
+                    dataDir = dataDir.replaceFirst("^/data/user/\\d+/",
+                            "/data/user/" + user + "/");
+                    if (!new File(dataDir).exists()) {
+                        shellCommands.installApk(null, null, appInfo.getSourceDir(), appInfo.getLabel(), user);
+                    }
                     restoreRet = shellCommands.doRestore(context, backupSubDir, appInfo.getLabel(), appInfo.getPackageName(), dataDir, user);
 
                     permRet = shellCommands.setPermissions(dataDir);
