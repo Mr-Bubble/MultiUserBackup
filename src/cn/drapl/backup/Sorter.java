@@ -82,7 +82,11 @@ public class Sorter
     public static Comparator<AppInfo> appInfoPackageNameComparator = (m1, m2) ->
             m1.getPackageName().compareToIgnoreCase(m2.getPackageName());
 
-    public void sort(int id)
+    public void sort(int id) {
+        sort(id, null);
+    }
+
+    public void sort(int id, String user)
     {
         switch(id)
         {
@@ -92,12 +96,12 @@ public class Sorter
                 break;
             case R.id.showOnlySystem:
                 filteringMethod = FilteringMethod.SYSTEM;
-                adapter.filterAppType(2);
+                adapter.filterAppType(2, user);
                 saveInPrefs("filteringId", filteringMethod.ordinal());
                 break;
             case R.id.showOnlyUser:
                 filteringMethod = FilteringMethod.USER;
-                adapter.filterAppType(1);
+                adapter.filterAppType(1, user);
                 saveInPrefs("filteringId", filteringMethod.ordinal());
                 break;
             case R.id.showNotBackedup:
@@ -145,7 +149,7 @@ public class Sorter
     public void filterShowAll()
     {
         filteringMethod = FilteringMethod.ALL;
-        adapter.filterAppType(0);
+        adapter.filterAppType(0, null);
     }
     public FilteringMethod getFilteringMethod()
     {

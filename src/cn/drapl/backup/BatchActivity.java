@@ -74,7 +74,7 @@ implements OnClickListener, BatchConfirmDialog.ConfirmListener
             FileCreationHelper.getDefaultBackupDirPath());
         backupDir = Utils.createBackupDir(BatchActivity.this, backupDirPath);
 
-        int filteringMethodId = 0;
+        int filteringMethodId = 2;
         int sortingMethodId = 0;
         Bundle extra = getIntent().getExtras();
         if(extra != null)
@@ -96,6 +96,17 @@ implements OnClickListener, BatchConfirmDialog.ConfirmListener
                 this, android.R.layout.simple_spinner_item, spinnerArray);
         selectAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         userSelect.setAdapter(selectAdapter);
+        userSelect.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                sorter.sort(R.id.showOnlyUser,
+                        backupBoolean?(String) userSelect.getSelectedItem():null);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                sorter.sort(R.id.showOnlyUser, null);
+            }
+        });
 
         bt.setOnClickListener(this);
         rbApk = (RadioButton) findViewById(R.id.radioApk);
@@ -124,7 +135,7 @@ implements OnClickListener, BatchConfirmDialog.ConfirmListener
         ListView listView = (ListView) findViewById(R.id.listview);
         adapter = new BatchAdapter(this, R.layout.batchlistlayout, list);
         sorter = new Sorter(adapter, prefs);
-        sorter.sort(filteringMethodId);
+        sorter.sort(filteringMethodId, backupBoolean?"0":null);
 //        sorter.sort(sortingMethodId);
         listView.setAdapter(adapter);
         // onItemClickListener gør at hele viewet kan klikkes - med onCheckedListener er det kun checkboxen der kan klikkes
