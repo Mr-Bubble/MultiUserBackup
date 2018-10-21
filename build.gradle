@@ -7,7 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:3.2.1'
     }
 }
 
@@ -31,14 +31,13 @@ dependencies {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.2"
+    buildToolsVersion '28.0.3'
 
    defaultConfig {
+       minSdkVersion 16
+       targetSdkVersion 17
        versionName "3.0.2"
        versionCode 3020
-       jackOptions {
-            enabled true
-        }
     }
 
     compileOptions {
@@ -63,10 +62,8 @@ android {
     }
 
     applicationVariants.all { variant ->
-        variant.outputs.each { output ->
-            def apk = output.outputFile;
-            output.outputFile = new File(apk.parentFile,
-                    "${project.name}-${variant.versionName}-${variant.buildType.name}.apk")
+        variant.outputs.all {
+            outputFileName = "${project.name}-${variant.versionName}-${variant.buildType.name}.apk"
         }
     }
 }
