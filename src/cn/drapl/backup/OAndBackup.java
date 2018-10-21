@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -17,8 +18,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
 import android.widget.Toast;
 import cn.drapl.backup.adapters.AppInfoAdapter;
 import cn.drapl.backup.schedules.Scheduler;
@@ -324,46 +323,43 @@ implements SharedPreferences.OnSharedPreferenceChangeListener, ActionListener
         menu.clear();
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.mainmenu, menu);
-        if(android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB)
+        mSearchItem = menu.findItem(R.id.search);
+        SearchView search = (SearchView) mSearchItem.getActionView();
+        search.setIconifiedByDefault(true);
+        search.setQueryHint(getString(R.string.searchHint));
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener()
         {
-            mSearchItem = menu.findItem(R.id.search);
-            SearchView search = (SearchView) mSearchItem.getActionView();
-            search.setIconifiedByDefault(true);
-            search.setQueryHint(getString(R.string.searchHint));
-            search.setOnQueryTextListener(new OnQueryTextListener()
+            @Override
+            public boolean onQueryTextChange(String newText)
             {
-                @Override
-                public boolean onQueryTextChange(String newText)
-                {
-                    if(OAndBackup.this.adapter != null)
-                        OAndBackup.this.adapter.getFilter().filter(newText);
-                    return true;
-                }
-                @Override
-                public boolean onQueryTextSubmit(String query)
-                {
-                    if(OAndBackup.this.adapter != null)
-                        OAndBackup.this.adapter.getFilter().filter(query);
-                    return true;
-                }
-            });
-            // man kan ikke bruge onCloseListener efter 3.2: http://code.google.com/p/android/issues/detail?id=25758
-            mSearchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener()
+                if(OAndBackup.this.adapter != null)
+                    OAndBackup.this.adapter.getFilter().filter(newText);
+                return true;
+            }
+            @Override
+            public boolean onQueryTextSubmit(String query)
             {
-                @Override
-                public boolean onMenuItemActionExpand(MenuItem item)
-                {
-                    return true;
-                }
-                @Override
-                public boolean onMenuItemActionCollapse(MenuItem item)
-                {
-                    adapter.getFilter().filter("");
-                    sorter.filterShowAll();
-                    return true;
-                }
-            });
-        }
+                if(OAndBackup.this.adapter != null)
+                    OAndBackup.this.adapter.getFilter().filter(query);
+                return true;
+            }
+        });
+        // man kan ikke bruge onCloseListener efter 3.2: http://code.google.com/p/android/issues/detail?id=25758
+        mSearchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener()
+        {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item)
+            {
+                return true;
+            }
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item)
+            {
+                adapter.getFilter().filter("");
+                sorter.filterShowAll();
+                return true;
+            }
+        });
         return true;
     }
     @Override

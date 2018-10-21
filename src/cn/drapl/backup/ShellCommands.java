@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.security.spec.ECField;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -328,7 +329,7 @@ public class ShellCommands implements CommandHandler.UnexpectedExceptionListener
     }
 
     public int setSelinux(String user, String packageDir) {
-        String cmd = String.format("chcon -R $(ls /data/user/%s/com.android.systemui/ -lZd | cut -d \" \" -f5) %s", user, packageDir);
+        String cmd = String.format("chcon -R $(ls /data/user/%s/com.android.contacts/ -lZd | cut -d \" \" -f5) %s", user, packageDir);
         ArrayList<String> cmds = new ArrayList<>();
         cmds.add(cmd);
         int ret = CommandHandler.runCmd("su", cmds, line -> {
@@ -806,6 +807,11 @@ public class ShellCommands implements CommandHandler.UnexpectedExceptionListener
                     line -> writeErrorLog("", line),
                     e -> Log.e(TAG, "getPackagesOfOtherUsers: ", e), this);
             commands.clear();
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
             for (String pkgLine : lines) {
                 Matcher m = packagePattern.matcher(pkgLine.trim());
@@ -856,7 +862,7 @@ public class ShellCommands implements CommandHandler.UnexpectedExceptionListener
                     Icon apkIcon = apkParser.getIconFile();
                     icon = BitmapFactory.decodeByteArray(apkIcon.data, 0,
                             apkIcon.data.length);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     PackageInfo pinfo = pm.getPackageArchiveInfo(apkLink,
                             PackageManager.GET_META_DATA);

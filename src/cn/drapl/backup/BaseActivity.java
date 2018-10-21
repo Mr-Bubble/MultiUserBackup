@@ -1,16 +1,18 @@
 package cn.drapl.backup;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import cn.drapl.backup.ui.LanguageHelper;
 import org.openintents.openpgp.util.OpenPgpApi;
 
-public class BaseActivity extends Activity
+public class BaseActivity extends AppCompatActivity
 {
     final static String TAG = "oandbackup";
     public static final int OPENPGP_REQUEST_ENCRYPT = 3;
@@ -23,7 +25,12 @@ public class BaseActivity extends Activity
         super.onCreate(savedInstanceState);
         if(android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.JELLY_BEAN && getParentActivityIntent() != null)
         {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(getResources().getColor(R.color.primary));
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String langCode = prefs.getString(Constants.PREFS_LANGUAGES,

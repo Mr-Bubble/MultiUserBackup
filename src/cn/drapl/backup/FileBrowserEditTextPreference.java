@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.preference.DialogPreference;
+import android.support.v7.preference.DialogPreference;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,37 +51,37 @@ public class FileBrowserEditTextPreference extends DialogPreference
     {
         setText(restoreValue ? getPersistedString(mText) : (String) defaultValue);
     }
-    @Override
-    protected void onDialogClosed(boolean positiveResult)
-    {
-        super.onDialogClosed(positiveResult);
-        if(positiveResult)
-        {
-            String value = mEditText.getText().toString();
-            if(callChangeListener(value))
-                setText(value);
-        }
-    }
-    @Override
-    protected void onBindDialogView(View view)
-    {
-        super.onBindDialogView(view);
-
-        EditText editText = mEditText;
-        editText.setText(getText());
-        button.setText("...");
-
-        ViewParent oldParent = editText.getParent();
-        if(oldParent != view)
-        {
-            if (oldParent != null)
-            {
-                ((ViewGroup) oldParent).removeView(button);
-                ((ViewGroup) oldParent).removeView(editText);
-            }
-            onAddViewsToDialogView(view, editText, button);
-        }
-    }
+//    @Override
+//    protected void onDialogClosed(boolean positiveResult)
+//    {
+//        super.onDialogClosed(positiveResult);
+//        if(positiveResult)
+//        {
+//            String value = mEditText.getText().toString();
+//            if(callChangeListener(value))
+//                setText(value);
+//        }
+//    }
+//    @Override
+//    protected void onBindDialogView(View view)
+//    {
+//        super.onBindDialogView(view);
+//
+//        EditText editText = mEditText;
+//        editText.setText(getText());
+//        button.setText("...");
+//
+//        ViewParent oldParent = editText.getParent();
+//        if(oldParent != view)
+//        {
+//            if (oldParent != null)
+//            {
+//                ((ViewGroup) oldParent).removeView(button);
+//                ((ViewGroup) oldParent).removeView(editText);
+//            }
+//            onAddViewsToDialogView(view, editText, button);
+//        }
+//    }
     /*
     * saving and restoring instance state is based on code from
     * the android development documentation:

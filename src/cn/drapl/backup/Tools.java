@@ -1,14 +1,15 @@
 package cn.drapl.backup;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 import cn.drapl.backup.adapters.ToolsAdapter;
@@ -19,7 +20,7 @@ import cn.drapl.backup.ui.NotificationHelper;
 import java.io.File;
 import java.util.ArrayList;
 
-public class Tools extends ListActivity
+public class Tools extends AppCompatActivity implements AdapterView.OnItemClickListener
 {
     ArrayList<AppInfo> appInfoList = OAndBackup.appInfoList;
     final static String TAG = OAndBackup.TAG; 
@@ -27,15 +28,17 @@ public class Tools extends ListActivity
     ShellCommands shellCommands;
     HandleMessages handleMessages;
     final static int RESULT_OK = 0;
+    ListView listView;
     
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.toolslayout);
+        listView = findViewById(R.id.tools_list);
         if(android.os.Build.VERSION.SDK_INT > android.os.Build.VERSION_CODES.JELLY_BEAN)
         {
-            getActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String langCode = prefs.getString(Constants.PREFS_LANGUAGES,
@@ -62,7 +65,8 @@ public class Tools extends ListActivity
             items.add(pair);
         }
         ToolsAdapter adapter = new ToolsAdapter(this, R.layout.toolslist, items);
-        setListAdapter(adapter);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(this);
     }
     @Override
     public void onDestroy()
@@ -73,8 +77,8 @@ public class Tools extends ListActivity
         }
         super.onDestroy();
     }
-    @Override
-    public void onListItemClick(ListView l, View v, int pos, long id)
+
+    public void onItemClick(AdapterView<?> l, View v, int pos, long id)
     {
         switch(pos)
         {
@@ -126,6 +130,7 @@ public class Tools extends ListActivity
                 break;
         }
     }
+
     public void changesMade()
     {
         Intent result = new Intent();
@@ -168,6 +173,7 @@ public class Tools extends ListActivity
         .setNegativeButton(R.string.dialogNo, null)
         .show();
     }
+
     public static class Pair
     {
         public final String title, description;
