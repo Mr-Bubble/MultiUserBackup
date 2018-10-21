@@ -58,7 +58,7 @@ implements SharedPreferences.OnSharedPreferenceChangeListener, ActionListener
     ShellCommands shellCommands;
     HandleMessages handleMessages;
     Sorter sorter;
-    
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -427,7 +427,7 @@ implements SharedPreferences.OnSharedPreferenceChangeListener, ActionListener
                 break;
         }
         return true;
-    }    
+    }
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo)
     {
@@ -557,7 +557,9 @@ implements SharedPreferences.OnSharedPreferenceChangeListener, ActionListener
         else if(key.equals(Constants.PREFS_PATH_BUSYBOX))
         {
             shellCommands = new ShellCommands(preferences);
-            checkBusybox();
+            if(!shellCommands.checkBusybox()) {
+                Utils.showWarning(this, "", getString(R.string.busyboxProblem));
+            }
         }
         else if(key.equals(Constants.PREFS_TIMESTAMP))
         {
@@ -608,11 +610,7 @@ implements SharedPreferences.OnSharedPreferenceChangeListener, ActionListener
             .setNegativeButton(R.string.dialogCancel, (dialog, which) -> {})
             .show();
     }
-    public void checkBusybox()
-    {
-        if(!shellCommands.checkBusybox())
-            Utils.showWarning(this, "", getString(R.string.busyboxProblem));
-    }
+
     private class InitRunnable implements Runnable
     {
         boolean checked;
@@ -638,17 +636,29 @@ implements SharedPreferences.OnSharedPreferenceChangeListener, ActionListener
             backupDir = Utils.createBackupDir(OAndBackup.this, backupDirPath);
             // temporary method to move logfile from bottom of external storage to bottom of backupdir
             new FileCreationHelper().moveLogfile(prefs.getString("pathLogfile", FileCreationHelper.getDefaultLogFilePath()));
+
             if(!checked)
             {
                 handleMessages.showMessage("", getString(R.string.suCheck));
                 boolean haveSu = ShellCommands.checkSuperUser();
                 LanguageHelper.legacyKeepLanguage(OAndBackup.this, langCode);
+
+                String errorMsg = "";
                 if(!haveSu)
                 {
-                    Utils.showWarning(OAndBackup.this, "", getString(R.string.noSu));
+                    errorMsg += getString(R.string.noSu);
                 }
-                checkBusybox();
+
+                if(!shellCommands.checkBusybox()) {
+                    errorMsg += getString(R.string.busyboxProblem);
+                }
+
                 handleMessages.endMessage();
+
+                if(!errorMsg.isEmpty()) {
+                    Utils.showWarning(OAndBackup.this, "", errorMsg);
+                    return;
+                }
             }
 
             if(appInfoList == null)

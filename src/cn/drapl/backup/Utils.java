@@ -71,8 +71,6 @@ public class Utils
                 new AlertDialog.Builder(activity)
                     .setTitle(title)
                     .setMessage(message)
-                    .setNeutralButton(R.string.dialogOK, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id){}})
                     .setCancelable(false)
                     .show();
             }
