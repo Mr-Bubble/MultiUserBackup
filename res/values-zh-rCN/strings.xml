@@ -155,7 +155,7 @@
     <string name="filebrowser_contextSetBackupDirectory">设置为备份文件夹</string>
 
     <string name="logviewer_message_loading">载入日志文件</string>
-    <string name="logviewer_next_lines_button">下一步</string>
+    <string name="logviewer_next_lines_button">下一页</string>
     <string name="user">用户：</string>
     <string name="isSystem">系统应用</string>
 
