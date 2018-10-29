@@ -30,7 +30,6 @@ public class BaseActivity extends AppCompatActivity
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(getResources().getColor(R.color.primary));
         }
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String langCode = prefs.getString(Constants.PREFS_LANGUAGES,
